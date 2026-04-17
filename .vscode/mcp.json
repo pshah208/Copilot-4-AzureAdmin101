@@ -1,0 +1,27 @@
+{
+  "servers": {
+    "azure-mcp": {
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start"],
+
+      }
+    },
+    "drawio-mcp": {
+      "command": "npx",
+      "args": ["-y", "@khulnasoft/drawio-mcp@latest"],
+      "env": {}
+    },
+    "microsoft-learn-mcp": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/learn-mcp@latest"],
+      "env": {}
+    },
+    "terraform-mcp": {
+      "command": "npx",
+      "args": ["-y", "@hashicorp/terraform-mcp-server@latest"],
+      "env": {
+        "TF_TOKEN_app_terraform_io": "${env:TF_TOKEN_app_terraform_io}"
+      }
+    }
+  }
+}
