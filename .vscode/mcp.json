@@ -1,0 +1,31 @@
+{
+  "servers": {
+    "azure-mcp": {
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start"],
+      "env": {
+        "AZURE_SUBSCRIPTION_ID": "${env:AZURE_SUBSCRIPTION_ID}",
+        "AZURE_TENANT_ID": "${env:AZURE_TENANT_ID}",
+        "AZURE_CLIENT_ID": "${env:AZURE_CLIENT_ID}",
+        "AZURE_CLIENT_SECRET": "${env:AZURE_CLIENT_SECRET}"
+      }
+    },
+    "drawio-mcp": {
+      "command": "npx",
+      "args": ["-y", "@khulnasoft/drawio-mcp@latest"],
+      "env": {}
+    },
+    "microsoft-learn-mcp": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/learn-mcp@latest"],
+      "env": {}
+    },
+    "terraform-mcp": {
+      "command": "npx",
+      "args": ["-y", "@hashicorp/terraform-mcp-server@latest"],
+      "env": {
+        "TF_TOKEN_app_terraform_io": "${env:TF_TOKEN_app_terraform_io}"
+      }
+    }
+  }
+}

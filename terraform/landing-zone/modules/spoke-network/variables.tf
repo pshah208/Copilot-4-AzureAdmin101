@@ -1,0 +1,10 @@
+variable "resource_group_name"       { type = string }
+variable "location"                   { type = string }
+variable "environment"                { type = string }
+variable "spoke_name"                 { type = string }
+variable "address_space"              { type = list(string) }
+variable "workload_subnets"           { type = map(string) }
+variable "hub_vnet_id"                { type = string }
+variable "hub_vnet_name"              { type = string }
+variable "hub_resource_group_name"    { type = string }
+variable "log_analytics_workspace_id" { type = string }

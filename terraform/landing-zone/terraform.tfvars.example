@@ -1,0 +1,35 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"  # Replace with your subscription ID
+tenant_id       = "00000000-0000-0000-0000-000000000000"  # Replace with your tenant ID
+environment     = "dev"
+location        = "eastus"
+cost_center     = "INFRA-001"
+owner           = "platform-team@example.com"
+
+hub_vnet_address_space       = ["10.0.0.0/16"]
+hub_gateway_subnet_prefix    = "10.0.0.0/27"
+hub_firewall_subnet_prefix   = "10.0.1.0/26"
+hub_management_subnet_prefix = "10.0.2.0/24"
+hub_bastion_subnet_prefix    = "10.0.3.0/26"
+
+enable_vpn_gateway          = false
+enable_expressroute_gateway = false
+enable_ddos_protection      = false
+enable_defender_for_cloud   = true
+
+log_analytics_retention_days = 30
+
+spokes = {
+  "workload-a" = {
+    address_space = ["10.10.0.0/16"]
+    workload_subnets = {
+      "snet-app"  = "10.10.1.0/24"
+      "snet-data" = "10.10.2.0/24"
+    }
+  }
+  "workload-b" = {
+    address_space = ["10.20.0.0/16"]
+    workload_subnets = {
+      "snet-app" = "10.20.1.0/24"
+    }
+  }
+}
