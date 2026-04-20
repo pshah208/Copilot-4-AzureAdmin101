@@ -2,14 +2,15 @@
   "servers": {
     "azure-mcp": {
       "command": "npx",
-      "args": ["-y", "@azure/mcp@latest", "server", "start"],
-
-      }
+      "args": ["-y", "@azure/mcp@latest", "server", "start"]
     },
-    "drawio-mcp": {
+    "drawio": {
       "command": "npx",
-      "args": ["-y", "@khulnasoft/drawio-mcp@latest"],
-      "env": {}
+      "args": ["@drawio/mcp"]
+    },
+    "drawio-http": {
+      "type": "http",
+      "url": "https://mcp.draw.io/mcp"
     },
     "microsoft-learn-mcp": {
       "command": "npx",
