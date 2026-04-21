@@ -1,3 +1,9 @@
+---
+mode: 'agent'
+description: 'Generate production-ready Terraform and Azure Bicep IaC code with remote state, modular structure, security defaults, and GitHub Actions CI/CD pipelines.'
+applyTo: '**/*.tf,**/*.tfvars,**/*.bicep,**/*.bicepparam'
+---
+
 # Terraform & Bicep – Azure Resource Deployment Skill
 
 ## Description

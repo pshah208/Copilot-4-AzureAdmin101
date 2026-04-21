@@ -1,3 +1,9 @@
+---
+mode: 'agent'
+description: 'Design well-architected Azure solutions covering all five WAF pillars, producing a conceptual architecture, service selection rationale, and deployable IaC skeleton.'
+applyTo: '**/architecture/**,**/*.md'
+---
+
 # Azure Architecture Design Skill
 
 ## Description

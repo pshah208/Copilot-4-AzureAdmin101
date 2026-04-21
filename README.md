@@ -15,6 +15,9 @@
 | 🔍 Troubleshooting | Systematic Azure issue diagnosis & remediation |
 | 📚 Microsoft Learn | AI-assisted learning from official Microsoft docs |
 | 🔒 Security & Governance | Policy, RBAC, Defender for Cloud out-of-the-box |
+| 🛡️ Azure Policy & Governance | Author policy definitions, initiatives, and remediation tasks |
+| 💰 Cost Optimisation | FinOps analysis, budget alerts, right-sizing, RI/SP recommendations |
+| 📊 Monitoring & KQL | KQL queries, Azure Monitor alerts, Workbooks, and observability strategy |
 
 ---
 
@@ -24,15 +27,19 @@
 .
 ├── .github/
 │   ├── copilot-instructions.md          # Global Copilot custom instructions
-│   ├── prompts/                         # Copilot skill prompt files
-│   │   ├── azure-landing-zone.prompt.md
-│   │   ├── azure-architecture-design.prompt.md
-│   │   ├── azure-troubleshooting.prompt.md
-│   │   ├── drawio-architecture.prompt.md
-│   │   └── terraform-bicep-deployment.prompt.md
-│   └── workflows/
-│       ├── terraform-landing-zone.yml   # Terraform CI/CD pipeline
-│       └── bicep-landing-zone.yml       # Bicep CI/CD pipeline
+│   └── prompts/                         # Copilot skill prompt files
+│       ├── azure-landing-zone.prompt.md
+│       ├── azure-architecture-design.prompt.md
+│       ├── azure-troubleshooting.prompt.md
+│       ├── azure-policy-governance.prompt.md
+│       ├── azure-cost-optimization.prompt.md
+│       ├── azure-monitoring-kql.prompt.md
+│       ├── drawio-architecture.prompt.md
+│       ├── drawio-icon-verification.prompt.md
+│       ├── drawio-export-publish.prompt.md
+│       ├── terraform-bicep-deployment.prompt.md
+│       └── references/                  # Supporting reference files
+│           └── azure2-complete-catalog.txt
 ├── .vscode/
 │   └── mcp.json                         # MCP server configurations
 ├── terraform/
@@ -145,6 +152,90 @@ Generates production-ready IaC code following best practices:
 
 ---
 
+### 6. 🛡️ Azure Policy & Governance
+
+**File**: `.github/prompts/azure-policy-governance.prompt.md`
+
+Author Azure Policy definitions, initiatives, assignments, exemptions, and remediation tasks following CAF governance patterns:
+
+- Built-in vs custom policy definitions with all supported effects (Deny, Audit, DINE, Modify, Append)
+- Initiative design scoped to Management Group, Subscription, or Resource Group
+- Tagging policies enforcing `Environment`, `CostCenter`, `Owner`, `CreatedBy`
+- Diagnostic settings enforcement via DeployIfNotExists policies
+- Authoring policies in both Bicep and Terraform
+
+**Example prompt**:
+> *"Create a policy initiative that enforces required tags and diagnostic settings on all resources in the production management group, and generate the remediation tasks to bring existing resources into compliance."*
+
+---
+
+### 7. 💰 Cost Optimisation & FinOps
+
+**File**: `.github/prompts/azure-cost-optimization.prompt.md`
+
+Drive Azure cost optimisation and FinOps practices across your subscriptions:
+
+- Azure Cost Management queries and multi-threshold budget alerts
+- Reserved Instances, Savings Plans, and Spot VM sizing recommendations
+- Right-sizing analysis for VMs, SQL, App Service, AKS, and Redis
+- Auto-shutdown scheduling, dev/test pricing, and B-series burstable VMs
+- Tagging strategy for cost allocation and KQL queries against cost exports
+
+**Example prompt**:
+> *"Analyse our Azure dev/test environment and give me a prioritised list of cost reduction actions with estimated monthly savings in USD."*
+
+---
+
+### 8. 📊 Monitoring, KQL & Observability
+
+**File**: `.github/prompts/azure-monitoring-kql.prompt.md`
+
+Author KQL queries, Azure Monitor alert rules, Workbooks, and a full observability strategy:
+
+- KQL fundamentals (summarize, project, extend, join, let, render) with a recipe library
+- Coverage of key tables: AzureActivity, Perf, SigninLogs, AppRequests, ContainerLog, and more
+- Alert rule design (metric, log, activity log) with dynamic thresholds and action groups
+- Workbook authoring guidance for performance, reliability, and security dashboards
+
+**Example prompt**:
+> *"Create KQL queries and alert rules to detect VM CPU saturation above 90%, failed Azure deployments in the Activity Log, and sign-in failure spikes in Entra ID."*
+
+---
+
+### 9. 🔎 Draw.io Icon Verification
+
+**File**: `.github/prompts/drawio-icon-verification.prompt.md`
+
+Strict Azure2 icon path verification workflow before any diagram is generated:
+
+- Step-by-step grep procedure against `references/azure2-complete-catalog.txt`
+- Verified vs unverified path examples with clear do/don't guidance
+- Fallback rules when an icon is missing (use closest category icon + descriptive label)
+- Verification report format listing ✅ verified, ⚠️ substituted, and ❌ removed icons
+- Hard gate: no unverified path may appear in generated diagram XML
+
+**Example prompt**:
+> *"Verify all icon paths in my hub-spoke diagram before generating the XML — list any substitutions or removals."*
+
+---
+
+### 10. 📤 Draw.io Export & Publish
+
+**File**: `.github/prompts/drawio-export-publish.prompt.md`
+
+Export Draw.io diagrams to PNG, SVG, or PDF via the draw.io CLI and publish to docs:
+
+- draw.io CLI installation (Linux/macOS/Windows/CI) and key export flags
+- Single and batch export scripts (Bash) with double-extension naming convention
+- GitHub Actions workflow for automated export on push
+- Embedding syntax for README, GitHub Wiki, MkDocs, and Docusaurus
+- Recommended `diagrams/` + `exports/` directory layout
+
+**Example prompt**:
+> *"Export all .drawio files in my diagrams/ folder to PNG at 2× resolution and embed them in the README under the Architecture section."*
+
+---
+
 ## 🔌 MCP Server Configuration
 
 MCP (Model Context Protocol) servers extend GitHub Copilot with live tool capabilities. The configuration is in `.vscode/mcp.json`.
@@ -242,35 +333,6 @@ az deployment sub create \
   --template-file bicep/landing-zone/main.bicep \
   --parameters bicep/landing-zone/parameters/dev.bicepparam
 ```
-
----
-
-## 🔄 CI/CD Pipelines
-
-### Terraform Pipeline (`.github/workflows/terraform-landing-zone.yml`)
-
-| Trigger | Action |
-|---|---|
-| Pull Request | `terraform validate` + `terraform plan` → comment on PR |
-| Merge to `main` | `terraform apply` |
-| Schedule (Mon 06:00 UTC) | Drift detection via `terraform plan -detailed-exitcode` |
-
-### Bicep Pipeline (`.github/workflows/bicep-landing-zone.yml`)
-
-| Trigger | Action |
-|---|---|
-| Pull Request | `bicep build` + `az deployment sub what-if` → comment on PR |
-| Merge to `main` | `az deployment sub create` |
-
-### Required GitHub Secrets
-
-```
-AZURE_TENANT_ID
-AZURE_SUBSCRIPTION_ID
-AZURE_CLIENT_ID          # Service principal with Contributor + RBAC Admin
-```
-
-> The pipelines use **OIDC federated credentials** — no long-lived secrets required. Configure Workload Identity Federation in Entra ID for the best security posture.
 
 ---
 
