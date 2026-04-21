@@ -61,7 +61,7 @@
 
 ## 🤖 GitHub Copilot Skills
 
-Skills are prompt files stored in `.github/prompts/`. Open them in VS Code and run them directly with **GitHub Copilot Chat** (`@workspace /use-prompt`), or use them as reference for crafting your own prompts.
+Skills are prompt files stored in `.github/prompts/`. Open a prompt file in VS Code and reference it in GitHub Copilot Chat (e.g., `#file:.github/prompts/drawio-architecture.prompt.md` as context), or use them as reference for crafting your own prompts.
 
 ### 1. 🏗️ Azure Landing Zone
 
@@ -117,11 +117,12 @@ Systematic diagnostic framework covering:
 
 **File**: `.github/prompts/drawio-architecture.prompt.md`
 
-Creates professional Azure architecture diagrams in **Draw.io XML format** using official Azure 2023 shape libraries:
+Creates professional Azure architecture diagrams as `.drawio` files using the **official Azure2 icon catalog (638 verified icons)**, the `drawio/create_diagram` MCP tool, and CLI export to PNG/SVG/PDF:
 
 - Conceptual, logical, physical, and network-topology diagrams
-- Colour-coded components following Microsoft design conventions
-- Importable XML output for diagrams.net / VS Code Draw.io extension
+- Professional VNet/subnet containment patterns with color-coded zones
+- Verified icon paths grepped from `references/azure2-complete-catalog.txt` before use
+- Export to PNG, SVG, or PDF via the draw.io CLI
 
 **Example prompt**:
 > *"Create a Draw.io diagram for a hub-and-spoke network with Azure Firewall, Bastion, ExpressRoute gateway, and three spoke VNets for dev, staging, and production."*
@@ -156,12 +157,12 @@ MCP (Model Context Protocol) servers extend GitHub Copilot with live tool capabi
 
 ### Available MCP Servers
 
-| Server | Package | Purpose |
-|---|---|---|
-| `azure-mcp` | `@azure/mcp` | Manage Azure resources, query Resource Graph, read logs |
-| `drawio-mcp` | `@khulnasoft/drawio-mcp` | Create and edit Draw.io diagrams programmatically |
-| `microsoft-learn-mcp` | `@microsoft/learn-mcp` | Search and retrieve official Microsoft documentation |
-| `terraform-mcp` | `@hashicorp/terraform-mcp-server` | Run Terraform plans, inspect state, and explore modules |
+| Server key in `mcp.json` | Type | Endpoint / Package | Purpose |
+|---|---|---|---|
+| `azure-mcp` | stdio | `@azure/mcp` (npm) | Manage Azure resources, query Resource Graph, read logs |
+| `drawio-http` | http | `https://mcp.draw.io/mcp` | Create and edit Draw.io diagrams programmatically |
+| `microsoft-learn` | http | `https://learn.microsoft.com/api/mcp` | Search and retrieve official Microsoft documentation |
+| `terraform-mcp` | stdio | `@hashicorp/terraform-mcp-server` (npm) | Run Terraform plans, inspect state, explore modules |
 
 ### Required Environment Variables
 
@@ -170,13 +171,12 @@ MCP (Model Context Protocol) servers extend GitHub Copilot with live tool capabi
 export AZURE_SUBSCRIPTION_ID="<your-subscription-id>"
 export AZURE_TENANT_ID="<your-tenant-id>"
 export AZURE_CLIENT_ID="<your-client-id>"
-export AZURE_CLIENT_SECRET="<your-client-secret>"   # or use Azure CLI login
 
 # Terraform MCP (optional – Terraform Cloud)
 export TF_TOKEN_app_terraform_io="<your-tfc-token>"
 ```
 
-> **Tip**: Use `az login` instead of a service principal for local development. The Azure MCP server will pick up your CLI credentials automatically.
+> **Tip**: Use `az login` or OIDC federated credentials for local and CI/CD authentication. The Azure MCP server will pick up your CLI credentials automatically. Avoid using long-lived `AZURE_CLIENT_SECRET` values; prefer Workload Identity Federation instead.
 
 ---
 

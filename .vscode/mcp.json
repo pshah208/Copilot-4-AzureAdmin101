@@ -4,18 +4,13 @@
       "command": "npx",
       "args": ["-y", "@azure/mcp@latest", "server", "start"]
     },
-    "drawio": {
-      "command": "npx",
-      "args": ["@drawio/mcp"]
-    },
     "drawio-http": {
       "type": "http",
       "url": "https://mcp.draw.io/mcp"
     },
-    "microsoft-learn-mcp": {
-      "command": "npx",
-      "args": ["-y", "@microsoft/learn-mcp@latest"],
-      "env": {}
+    "microsoft-learn": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
     },
     "terraform-mcp": {
       "command": "npx",
