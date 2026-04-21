@@ -1,7 +1,7 @@
 ---
-name: drawio-architecture
-description: "Generate Azure architecture diagrams as .drawio files using raw XML or the Draw.io MCP (drawio/create_diagram). Uses the Azure2 icon catalog (638 verified icons), professional network topology patterns (VNet/subnet containment, labeled traffic flows), and CLI export to PNG/SVG/PDF. Use when the user asks to create architecture, flowchart, sequence, or network topology diagrams — especially for Azure."
-argument-hint: "Describe the diagram to create, Azure services to include, and optional export format (png, svg, pdf)"
+mode: 'agent'
+description: 'Generate Azure architecture diagrams as .drawio files using the official Azure2 icon catalog (638 verified icons), professional network topology patterns, and CLI export to PNG/SVG/PDF.'
+applyTo: '**/*.drawio,**/*.drawio.xml,**/diagrams/**'
 ---
 
 # Draw.io Diagram Skill — Azure Specialized

@@ -1,3 +1,9 @@
+---
+mode: 'agent'
+description: 'Systematically diagnose and resolve Azure infrastructure issues using a structured troubleshooting methodology covering Activity Logs, NSG Flow Logs, KQL queries, and step-by-step remediation.'
+applyTo: '**/troubleshooting/**,**/*.md'
+---
+
 # Azure Troubleshooting Skill
 
 ## Description

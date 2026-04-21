@@ -1,3 +1,9 @@
+---
+mode: 'agent'
+description: 'Design and deploy a CAF Enterprise-Scale Azure Landing Zone with hub-and-spoke networking, policy governance, and IaC deployment artefacts.'
+applyTo: '**/landing-zone/**,**/landingzone/**'
+---
+
 # Azure Landing Zone – Architecture, Design & Deployment Skill
 
 ## Description

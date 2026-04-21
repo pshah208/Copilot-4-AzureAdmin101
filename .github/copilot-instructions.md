@@ -36,3 +36,20 @@ You are an expert Azure cloud architect and administrator. When assisting with t
 | Architecture diagrams | `drawio-http` |
 | Learning & documentation | `microsoft-learn` |
 | Terraform plans & modules | `terraform-mcp` |
+
+## 🧭 Skill Routing
+
+**Skill selection rule**: When a user request matches a task intent below, auto-attach the corresponding prompt file as context. Select the prompt whose `applyTo` glob matches the active file, or whose description best matches the stated intent. When referencing official Microsoft documentation in any response, cite the source via the `microsoft-learn` MCP server to retrieve the latest content.
+
+| Task intent | Attach prompt file | Preferred MCP |
+|---|---|---|
+| Design a CAF landing zone | `azure-landing-zone.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Design an Azure solution architecture | `azure-architecture-design.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Troubleshoot an Azure issue | `azure-troubleshooting.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Create a Draw.io architecture diagram | `drawio-architecture.prompt.md` | `drawio-http` |
+| Write Terraform or Bicep IaC code | `terraform-bicep-deployment.prompt.md` | `terraform-mcp`, `azure-mcp` |
+| Author Azure Policy definitions or initiatives | `azure-policy-governance.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Optimise Azure costs or implement FinOps | `azure-cost-optimization.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Write KQL queries or Azure Monitor alerts | `azure-monitoring-kql.prompt.md` | `azure-mcp`, `microsoft-learn` |
+| Verify Azure2 icon paths in a diagram | `drawio-icon-verification.prompt.md` | `drawio-http` |
+| Export or publish Draw.io diagrams | `drawio-export-publish.prompt.md` | `drawio-http` |
