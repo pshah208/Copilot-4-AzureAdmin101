@@ -1,0 +1,37 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# Node / VS Code
+node_modules/
+.vscode/settings.json
+.vscode/launch.json
+*.vsix
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets / credentials
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.local
+
+# Build artifacts
+dist/
+out/
+build/
