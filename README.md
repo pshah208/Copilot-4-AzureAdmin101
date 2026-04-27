@@ -1,3 +1,12 @@
+> [!WARNING]
+> ## ⚠️ Disclaimer
+>
+> **This tool is provided "AS IS", without warranty of any kind, express or implied.** It is intended for educational, evaluation, and experimental purposes only. Before using any prompts, Infrastructure-as-Code templates, scripts, or AI-generated outputs from this repository in a production environment, you **must independently evaluate, test, and validate** them against your organisation's security, compliance, and operational requirements.
+>
+> **Use at your own risk.** The author(s) and contributors accept no liability for any direct, indirect, incidental, or consequential damages — including but not limited to data loss, service outages, security incidents, unexpected Azure costs, or compliance violations — arising from the use, misuse, or inability to use this tool. AI-generated content (including Copilot suggestions, diagrams, and IaC code) may contain errors, omissions, or insecure defaults and **must be reviewed by a qualified Azure professional** before deployment.
+
+---
+
 # 🚀 Copilot for Azure Administration 101
 
 > **GitHub Copilot** supercharged with Azure-native skills, MCP servers, and Infrastructure-as-Code templates to accelerate cloud architecture, deployment, and operations.
@@ -68,7 +77,7 @@
 
 ## 🤖 GitHub Copilot Skills
 
-Skills are prompt files stored in `.github/prompts/`. Open a prompt file in VS Code and reference it in GitHub Copilot Chat (e.g., `#file:.github/prompts/drawio-architecture.prompt.md` as context), or use them as reference for crafting your own prompts.
+Skills are prompt files stored in `.github/prompts/`. Open a prompt file in VS Code and reference it in GitHub Copilot Chat (e.g., `#file:.github/prompts/drawio-architecture.prompt.md` as context).
 
 ### 1. 🏗️ Azure Landing Zone
 
@@ -124,7 +133,7 @@ Systematic diagnostic framework covering:
 
 **File**: `.github/prompts/drawio-architecture.prompt.md`
 
-Creates professional Azure architecture diagrams as `.drawio` files using the **official Azure2 icon catalog (638 verified icons)**, the `drawio/create_diagram` MCP tool, and CLI export to PNG/SVG/PDF:
+Creates professional Azure architecture diagrams as `.drawio` files using the **official Azure2 icon catalog (638 verified icons)**, the `drawio/create_diagram` MCP tool, and CLI export to PNG/SVG/PDF.
 
 - Conceptual, logical, physical, and network-topology diagrams
 - Professional VNet/subnet containment patterns with color-coded zones
@@ -267,7 +276,7 @@ export AZURE_CLIENT_ID="<your-client-id>"
 export TF_TOKEN_app_terraform_io="<your-tfc-token>"
 ```
 
-> **Tip**: Use `az login` or OIDC federated credentials for local and CI/CD authentication. The Azure MCP server will pick up your CLI credentials automatically. Avoid using long-lived `AZURE_CLIENT_SECRET` values; prefer Workload Identity Federation instead.
+> **Tip**: Use `az login` or OIDC federated credentials for local and CI/CD authentication. The Azure MCP server will pick up your CLI credentials automatically. Avoid using long-lived `AZURE_CLIENT_SECRET` values where possible.
 
 ---
 
@@ -303,9 +312,9 @@ az login
 az account set --subscription "<your-subscription-id>"
 
 # Deploy
-terraform init
-terraform plan
-terraform apply
+tf init
+tf plan
+tf apply
 ```
 
 ---
