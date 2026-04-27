@@ -1,154 +1,145 @@
-# Draw.io Layout Anti-Patterns
+# Draw.io Layout Anti-Patterns Reference
 
-Common layout problems and how to fix them in Azure architecture diagrams.
-
----
-
-## Anti-Pattern 1: Spaghetti Edges
-
-**Problem**: Many edges crossing each other, making the diagram unreadable.
-
-**Example (bad)**:
-- 8 services all connected to each other with direct edges
-- Edges overlap and cross multiple times
-- No clear flow direction
-
-**Fix**:
-- Enforce a consistent left-to-right or top-to-bottom flow direction
-- Use waypoints (`<Array as="points">`) to route edges around containers
-- Group related services inside containers so internal connections stay local
-- Use `edgeStyle=orthogonalEdgeStyle` to keep edges at right angles
+Worked examples of layout problems encountered in real diagram reviews, and how to fix them.
 
 ---
 
-## Anti-Pattern 2: Icon Per Step (Over-Iconification)
+## Common Root Causes of Cluttered Diagrams
 
-**Problem**: Every small processing step gets its own Azure icon, producing a wall of 20+ icons.
+Six issues frequently compound to make lines and labels unreadable:
 
-**Example (bad)**:
-- App Service → Function (receive) → Function (validate) → Function (transform) → Cosmos DB → Function (notify) → Service Bus
-
-**Fix**:
-- Use one icon per **major service** (App Service, Cosmos DB, Service Bus)
-- Combine minor processing steps into a single labelled shape or swimlane
-- Use stage numbers (1, 2, 3) on edges instead of a separate icon per step
-- Rule of thumb: if two shapes have the same icon type, consider merging them
-
----
-
-## Anti-Pattern 3: Missing Container Hierarchy
-
-**Problem**: Resources are scattered across the canvas with no visual grouping, making it impossible to see which resources share a VNet/subnet/resource group.
-
-**Example (bad)**:
-- VM, SQL, AKS, Key Vault placed as individual shapes with no enclosing containers
-- Network topology is invisible
-
-**Fix**:
-- Wrap resources in containers: Resource Group → VNet → Subnet → Resource
-- Use the VNet/Subnet styles from the Professional Network Topology Patterns section:
-  - VNet: `fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=4;container=1`
-  - Subnet: `fillColor=#e6f4ea;strokeColor=#82b366;strokeWidth=2;dashed=1;dashPattern=8 8;container=1`
-- Set `parent="subnetId"` on resources so they render inside their subnet
+| # | Problem | Symptom |
+|---|---------|---------|
+| 1 | Repeated identical label on 3+ edges from the same hub node | Labels stacked on top of each other at the source exit |
+| 2 | 3+ dashed lines leaving the same node face within 20px | Lines rendered as one thick bar |
+| 3 | Azure Monitor placed inside a VNet/subnet container | Architecturally incorrect and visually clutters private network |
+| 4 | Decorative resource icon free-floating inside a container, overlapping service icons | Icon covers service icon |
+| 5 | Two services sharing one subnet with exits on the same face | Shared corridor, all edges stacked |
+| 6 | All `mxCell` elements on one line | Any patch edit fails context match |
 
 ---
 
-## Anti-Pattern 4: Self-Closing Edge Cells
+## Fix Patterns
 
-**Problem**: Edge `mxCell` elements are self-closing (no `mxGeometry` child), causing parse errors or invisible edges.
+### Repeated edge labels
 
-**Example (bad)**:
 ```xml
-<mxCell id="e1" edge="1" source="a" target="b" parent="1"/>
+<!-- BEFORE (all three labels identical) -->
+<mxCell id="33" value="Route" ... source="hub" target="A">
+<mxCell id="34" value="Route" ... source="hub" target="B">
+<mxCell id="35" value="Route" ... source="hub" target="C">
+
+<!-- AFTER (each label names the specific target) -->
+<mxCell id="33" value="Service A" ... source="hub" target="A">
+<mxCell id="34" value="Service B" ... source="hub" target="B">
+<mxCell id="35" value="Service C" ... source="hub" target="C">
 ```
 
-**Fix** — always include an `mxGeometry` child:
+### Exit anchor fanning (3+ edges from one node face)
+
+Spread `exitX` values at least 0.15 apart. Use `<Array as="points">` waypoints to route each edge into its own horizontal corridor before they reach targets.
+
+The `x`/`y` attributes on `mxGeometry relative="1"` shift the **label** along the edge path — use this to avoid label stacking when edges share a path segment:
+
 ```xml
-<mxCell id="e1" edge="1" source="a" target="b" parent="1">
-  <mxGeometry relative="1" as="geometry"/>
+<!-- Three edges leaving the bottom of a hub node, fanned across 0.35 / 0.5 / 0.65 -->
+<mxCell id="33" value="Service A"
+  style="...;exitX=0.35;exitY=1;...;entryX=0.5;entryY=0;..."
+  edge="1" source="hub" target="A" parent="1">
+  <mxGeometry relative="1" x="-0.55" y="-16" as="geometry">
+    <Array as="points"><mxPoint x="WAY_X" y="WAY_Y"/></Array>
+  </mxGeometry>
+</mxCell>
+
+<mxCell id="34" value="Service B"
+  style="...;exitX=0.5;exitY=1;...;entryX=0.5;entryY=0;..."
+  edge="1" source="hub" target="B" parent="1">
+  <mxGeometry relative="1" x="-0.2" y="-4" as="geometry">
+    <Array as="points"><mxPoint x="WAY_X" y="WAY_Y"/></Array>
+  </mxGeometry>
+</mxCell>
+
+<mxCell id="35" value="Service C"
+  style="...;exitX=0.65;exitY=1;...;entryX=0.5;entryY=0;..."
+  edge="1" source="hub" target="C" parent="1">
+  <mxGeometry relative="1" x="0.2" y="10" as="geometry">
+    <Array as="points"><mxPoint x="WAY_X" y="WAY_Y"/></Array>
+  </mxGeometry>
+</mxCell>
+```
+
+Same pattern for right-side dashed management/observability edges from a hub node:
+
+```text
+exitX=1, exitY=0.35   -> first target   (label offset: x=-0.45, y=-18)
+exitX=1, exitY=0.52   -> second target  (label offset: x=-0.15, y=-2)
+exitX=1, exitY=0.68   -> third target   (label offset: x=0.25,  y=14)
+```
+
+### Observability zone placement
+
+```
+WRONG layout:
+  +---------------------------------------------+
+  | VNet                                         |
+  |  +------------------+  +-----------------+   |
+  |  | snet-ingress     |  | snet-mgmt       |  |
+  |  |  [GW]  [Hub Svc] |  |  [KV] [DNS]     |  |
+  |  +------------------+  +-----------------+   |
+  |  [Monitor]  <-- WRONG: Monitor inside VNet   |
+  +---------------------------------------------+
+
+CORRECT layout:
+  +---------------------------------------------+   [Monitor] --> [Log Analytics] --> [Sentinel]
+  | VNet                                         |       ^
+  |  +------------------+  +-----------------+   |   dashed telemetry edge exits VNet boundary
+  |  | snet-ingress     |  | snet-mgmt       |  |
+  |  |  [GW]  [Hub Svc] |  |  [KV] [DNS]     |  |
+  |  +------------------+  +-----------------+   |
+  +---------------------------------------------+
+```
+
+Azure Monitor, Log Analytics Workspace, and Microsoft Sentinel are **not VNet resources**. They must be positioned in a zone outside/right of the VNet boundary. The telemetry edge (dashed) crosses the VNet boundary — that's correct and communicates the service model.
+
+### Decorative icon positioning
+
+Icons such as the Virtual Network icon (`networking/Virtual_Networks.svg`) used as a visual label companion should be anchored to a fixed corner of their parent container — typically top-right. Without anchoring, draw.io renders them at the computed top-left of the container where they land on top of subnet boxes or service icons.
+
+```xml
+<!-- Anchor to top-right of region/VNet container -->
+<mxCell id="8" value="Virtual Network"
+  style="image;aspect=fixed;...;image=img/lib/azure2/networking/Virtual_Networks.svg;"
+  vertex="1" parent="1">
+  <!-- x = container_x + container_width - icon_width - 20px margin -->
+  <mxGeometry x="1360" y="180" width="140" height="90" as="geometry"/>
+</mxCell>
+```
+
+### Single-line XML — how to avoid
+
+When generating `mxGraphModel` XML, always emit one `mxCell` per line with child elements indented:
+
+```xml
+<!-- BAD: impossible to patch, xmllint errors point to char 0 -->
+<mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="2" value="..." style="..." vertex="1" parent="1"><mxGeometry x="30" y="20" width="1940" height="70" as="geometry"/></mxCell>...
+
+<!-- GOOD: each element independently patchable -->
+<mxCell id="0"/>
+<mxCell id="1" parent="0"/>
+<mxCell id="2" value="Title" style="..." vertex="1" parent="1">
+  <mxGeometry x="30" y="20" width="1940" height="70" as="geometry"/>
 </mxCell>
 ```
 
 ---
 
-## Anti-Pattern 5: Double-Hyphen XML Comments
+## Quick Checklist Before Finalizing Any Diagram
 
-**Problem**: XML comments containing `--` are illegal per the XML specification and cause parse failures.
-
-**Example (bad)**:
-```xml
-<!-- Hub -- Spoke topology -- v2 -->
-```
-
-**Fix** — use single hyphens or rephrase:
-```xml
-<!-- Hub-Spoke topology v2 -->
-```
-
----
-
-## Anti-Pattern 6: Unverified Azure Icon Paths
-
-**Problem**: Using `shape=mxgraph.azure2.*` or guessing icon paths like `img/lib/azure2/compute/Virtual_Machines.svg` (wrong plural).
-
-**Example (bad)**:
-```xml
-style="shape=mxgraph.azure2.virtual_machine;"
-style="image=img/lib/azure2/compute/Virtual_Machines.svg;"  <!-- wrong -->
-```
-
-**Fix**:
-- Always grep `references/azure2-complete-catalog.txt` before using any `img/lib/azure2/...` path
-- Use the `image;aspect=fixed;html=1;...` style format
-- Correct example: `image=img/lib/azure2/compute/Virtual_Machine.svg` (singular)
-
----
-
-## Anti-Pattern 7: Canvas Too Small for Complex Topologies
-
-**Problem**: Default canvas size (1169x827) causes nodes to overlap in multi-VNet diagrams.
-
-**Fix**:
-- For complex multi-VNet/multi-region diagrams, set `pageWidth="1900" pageHeight="1500"` on `mxGraphModel`
-- Space nodes at least 200px horizontally and 120px vertically
-- Align everything to a 10px grid
-
----
-
-## Anti-Pattern 8: Too Many Cross-Zone Dashed Lines
-
-**Problem**: Every service has a monitoring line, an identity line, a DNS line, and a backup line — resulting in 40+ dashed edges overlapping.
-
-**Fix**:
-- Limit cross-lane dashed lines to:
-  - One security/auth line (e.g., Key Vault → App)
-  - One optional telemetry line (e.g., App → Log Analytics)
-- Group monitoring/identity connections into a "Management Plane" swimlane rather than drawing individual edges
-- Use a legend box to describe implicit connections instead of drawing each one
-
----
-
-## Anti-Pattern 9: No Traffic Legend
-
-**Problem**: Colored arrows have no explanation, making the diagram ambiguous.
-
-**Fix**:
-- Always include a Traffic Legend box (bottom-left corner)
-- Each entry: colored arrow sample + protocol/port label
-- Style: `fillColor=#ffffff;strokeColor=#000000;strokeWidth=3;`
-- Example entries:
-  - Red thick arrow → HTTPS:443 (internet ingress)
-  - Blue dashed arrow → PostgreSQL:5432
-  - Orange dashed arrow → RBAC/Identity
-
----
-
-## Anti-Pattern 10: Flat Management Group Trees
-
-**Problem**: Management group hierarchy drawn as a flat list of boxes instead of a tree, making parent-child relationships unclear.
-
-**Fix**:
-- Use top-to-bottom layout for hierarchy diagrams
-- Parent groups should be visually larger containers enclosing child groups
-- Or use a vertical swimlane structure with `swimlane;startSize=30;` cells
-- Label each level: Tenant Root → Platform → Landing Zones → Workloads
+- [ ] All sibling edges (same source -> different targets) have **unique** labels
+- [ ] 3+ edges from same node face have spread `exitX` values (>=0.15 gap) + waypoints
+- [ ] Edge labels are offset using `mxGeometry x`/`y` when edges share a path segment
+- [ ] Monitor / Log Analytics / Sentinel are **outside** any VNet or subnet container
+- [ ] Decorative network/resource icons are corner-anchored, not free-floating
+- [ ] At most 2 dashed cross-zone lines (one security/secrets, one telemetry)
+- [ ] XML is indented (one `mxCell` per line) — not minified
+- [ ] `xmllint --noout <file>` returns no errors
