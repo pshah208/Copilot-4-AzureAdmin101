@@ -448,6 +448,18 @@ Set `parent="containerId"` on child cells. Children use **relative coordinates**
 - Always use unique `id` values for each `mxCell`
 - Always emit one `mxCell` per line with child elements indented — never minify to a single line
 
+## 🧭 Related Skills & Prompt Routing
+
+| Task intent | Prompt file | Preferred MCP |
+|---|---|---|
+| Generate Azure architecture diagram | `drawio-architecture.prompt.md` | `drawio-http` |
+| Verify Azure2 icon paths | `drawio-icon-verification.prompt.md` | `drawio-http` |
+| Export / publish diagrams | `drawio-export-publish.prompt.md` | `drawio-http` |
+| Deep-dive explain a diagram or IaC file | `azure-teaching-mode.prompt.md` | `microsoft-learn` |
+
+> **Teaching Mode**: If `teach mode on` is active (see `.github/copilot-instructions.md`), diagram generation responses automatically append the six teaching sections (Why / Trade-offs / What could go wrong / Learn more / Try it yourself / Glossary). To deep-dive explain an existing `.drawio` or IaC file, invoke `azure-teaching-mode.prompt.md` directly.
+
+
 ## Style Reference
 
 For the complete draw.io style reference: https://www.drawio.com/doc/faq/drawio-style-reference.html
