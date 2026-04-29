@@ -13,6 +13,35 @@
 
 ---
 
+## 🎓 Teaching Mode
+
+Copilot in this repo works in two modes:
+
+| Mode | Behaviour |
+|---|---|
+| **Default (Doer Mode)** | Produces Azure artifacts — IaC, diagrams, policies, KQL — directly. Concise and action-focused. |
+| **Teaching Mode (opt-in)** | Produces the artifact **and** explains the *why*, trade-offs, failure modes, Microsoft Learn links, and a hands-on exercise. |
+
+**Teaching Mode is OFF by default.** Toggle it with any of these phrases:
+
+```
+teach mode on          # ON for the rest of the conversation
+enable teaching mode   # ON for the rest of the conversation
+/teach on              # ON for the rest of the conversation
+explain as you build   # One-shot: ON for next response only
+
+teach mode off         # OFF
+disable teaching mode  # OFF
+/teach off             # OFF
+just do it             # Silences teaching for the current response only
+```
+
+Copilot confirms each toggle inline (`✅ Teaching Mode: ON` / `Teaching Mode: OFF`).
+
+👉 See [LEARNING.md](LEARNING.md) for the full learning guide, activation phrases, and the six learning tracks in [`docs/learning-paths/`](docs/learning-paths/).
+
+---
+
 ## ✨ Capabilities Overview
 
 | Capability | Description |
@@ -35,7 +64,7 @@
 ```
 .
 ├── .github/
-│   ├── copilot-instructions.md          # Global Copilot custom instructions
+│   ├── copilot-instructions.md          # Global Copilot custom instructions (incl. Teaching Mode)
 │   └── prompts/                         # Copilot skill prompt files
 │       ├── azure-landing-zone.prompt.md
 │       ├── azure-architecture-design.prompt.md
@@ -43,6 +72,7 @@
 │       ├── azure-policy-governance.prompt.md
 │       ├── azure-cost-optimization.prompt.md
 │       ├── azure-monitoring-kql.prompt.md
+│       ├── azure-teaching-mode.prompt.md    # NEW: deep-dive teaching skill
 │       ├── drawio-architecture.prompt.md
 │       ├── drawio-icon-verification.prompt.md
 │       ├── drawio-export-publish.prompt.md
@@ -51,6 +81,15 @@
 │           └── azure2-complete-catalog.txt
 ├── .vscode/
 │   └── mcp.json                         # MCP server configurations
+├── docs/
+│   └── learning-paths/                  # NEW: self-paced learning tracks
+│       ├── 01-landing-zone-fundamentals.md
+│       ├── 02-iac-with-terraform-vs-bicep.md
+│       ├── 03-networking-hub-spoke.md
+│       ├── 04-policy-and-governance.md
+│       ├── 05-monitoring-and-kql.md
+│       └── 06-finops-basics.md
+├── LEARNING.md                          # NEW: teaching mode guide & track index
 ├── terraform/
 │   └── landing-zone/                    # Hub-and-spoke landing zone (Terraform)
 │       ├── main.tf
@@ -242,6 +281,25 @@ Export Draw.io diagrams to PNG, SVG, or PDF via the draw.io CLI and publish to d
 
 **Example prompt**:
 > *"Export all .drawio files in my diagrams/ folder to PNG at 2× resolution and embed them in the README under the Architecture section."*
+
+---
+
+### 11. 🎓 Azure Teaching Mode (Deep-Dive)
+
+**File**: `.github/prompts/azure-teaching-mode.prompt.md`
+
+Point Copilot at any file in this repo for a structured deep-dive explanation:
+
+- Line-by-line (or block-by-block) walkthrough of IaC, diagrams, or policy files
+- Maps each resource to the relevant CAF/WAF principle with a summary table
+- Surfaces failure modes and detection hints for each component
+- Generates a step-by-step guided lab to reproduce the pattern from scratch
+- Includes checkpoint questions with hidden answers
+
+**Always teaching**: this skill is always in teaching mode — no `teach mode on` required.
+
+**Example prompt**:
+> *"Walk me through terraform/landing-zone/modules/hub-network/main.tf and explain every resource."*
 
 ---
 

@@ -294,3 +294,19 @@ Add `pointerEvents=0;` unless the container itself must be connectable.
 - Azure resources identifiable (icons + clear labels)
 - For infra/network diagrams: topology checklist above satisfied
 - Layout anti-patterns checked against `references/layout-antipatterns.md`
+
+
+---
+
+## 🎓 Teaching Mode Behavior
+
+If Teaching Mode is **ON** (see `.github/copilot-instructions.md`), after producing the primary artifact, also emit the six teaching sections:
+
+1. **Why this design?** — 2–4 bullets mapping decisions to Azure Well-Architected Framework pillar(s) and/or CAF principles.
+2. **Trade-offs considered** — alternatives evaluated and why the chosen path won.
+3. **What could go wrong** — top 1–3 failure modes / misconfigurations and how to detect them.
+4. **Learn more** — 2–3 links to Microsoft Learn / CAF / WAF docs (use the `microsoft-learn` MCP if available).
+5. **Try it yourself** — a short hands-on exercise or `az` / `terraform` / `bicep` command the engineer can run.
+6. **Glossary** — define Azure acronyms (NSG, UDR, PE, MI, LAW, etc.) on first use in that response.
+
+If Teaching Mode is **OFF** (default), skip these sections entirely. Output is minimal as today.
